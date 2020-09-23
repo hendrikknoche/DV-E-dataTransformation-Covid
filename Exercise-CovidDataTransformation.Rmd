@@ -28,21 +28,23 @@ dsize
 
 ```{r dc-diagnosedCases, include=TRUE}
 # make data tidy
-dc %<>% 
-  #use pivot_longer to transpose all columns (apart from date_sample) to two columns ('kommune','testsConducted') that hold the name of the kommune and the values of the number of diagnosed cases
-  pivot_longer(XXXXXX) %>% 
+dc %<>%
+  # use pivot_longer to transpose all columns (apart from date_sample) to two columns ('kommune',
+  #  'testsConducted' 
+  #'casesDiagnosed') 
+  #that hold the name of the kommune and the values of the number of diagnosed cases
+  pivot_longer(XXXXXX) %>%
   arrange(kommune, date_sample)
 dc
 ```
 
 ```{r testedPeople, include=TRUE}
-dt %<>% 
-  #use pivot_longer to transpose all columns (apart from PrDate_adjusted) to two columns ('kommune','testsConducted') that hold the name of the kommune and the values of the number of conducted tests 
+dt %<>%
+  # use pivot_longer to transpose all columns (apart from PrDate_adjusted) to two columns ('kommune','testsConducted') that hold the name of the kommune and the values of the number of conducted tests
   pivot_longer(XXXXX) %>%
   arrange(kommune, PrDate_adjusted) %>%
   rename(date_sample = PrDate_adjusted) %>%
   filter(!(kommune == "X101"))
-
 ```
 
 ```{r NAtests, include=TRUE}
@@ -53,13 +55,12 @@ sum(is.na(dsize$Befolkningstal))
 ```
 
 ```{r columnRenaming, include=TRUE}
-# make data compatible rename columns for merging 
+# make data compatible rename columns for merging
 dsize <- dsize %>%
   select(contains("Kom"), Befolkningstal) %>%
   rename("kID" = `Kommune_(id)`, "kommune" = `Kommune_(navn)`, population = Befolkningstal) %>%
   mutate(population = population * 1000) %>%
   select(-kID)
-
 ```
 
 ```{r keyCheck, include=TRUE}
@@ -79,45 +80,46 @@ dsize$kommune <- str_replace(dsize$kommune, "København", "Copenhagen")
 # merge data together
 dc <- merge(dc, dsize)
 dt <- merge(dt, dsize)
-
 ```
 
 ```{r DeriveVariablesCases, include=TRUE}
 
-# create new variables within mutate 
-# (e.g. rolling aggregates with roll_sum - cases of the last seven days) - 
-# numbers per 1000 people 
+# create new variables within mutate
+# (e.g. rolling aggregates with roll_sum - cases of the last seven days) -
+# numbers per 1000 people
 # use the lag function to compute the differences between a days (7day sum) value and the one from 7 days (3, and 1) ago
 #
-dc %<>% 
+dc %<>%
   group_by(kommune) %>%
-  arrange(kommune,date_sample) %>%
-  mutate(dcr100k = XXX, 
-         dcr7d = XXX,
-         dcr7dPer100k= XXX,
-         dcr7dPer100kCh1 = XXX,
-         dcr7dPer100kCh3 = XXX,
-         dcr7dPer100kCh7 = XXX
-         )
+  arrange(kommune, date_sample) %>%
+  mutate(
+    dcr100k = XXX,
+    dcr7d = XXX,
+    dcr7dPer100k = XXX,
+    dcr7dPer100kCh1 = XXX,
+    dcr7dPer100kCh3 = XXX,
+    dcr7dPer100kCh7 = XXX
+  )
 
 dc
 ```
 
 ```{r DeriveVariablesTests}
-# create new variables within mutate 
-# (e.g. rolling aggregates with roll_sum - cases of the last seven days) - 
-# numbers per 1000 people 
+# create new variables within mutate
+# (e.g. rolling aggregates with roll_sum - cases of the last seven days) -
+# numbers per 1000 people
 # use the lag function to compute the differences between a days (7day sum) value and the one from 7 days (3, and 1) ago
-dt %<>% 
-  group_by(kommune) %>% 
-  arrange(kommune,date_sample) %>%
-  mutate(tr100k = XXX, 
-         tr7d = XXX, 
-         tr7dP100k = XXX,
-         tr7dP100kCh1 = XXX,
-         tr7dP100kCh3 = XXX,
-         tr7dP100kCh7 = XXX
-         )
+dt %<>%
+  group_by(kommune) %>%
+  arrange(kommune, date_sample) %>%
+  mutate(
+    tr100k = XXX,
+    tr7d = XXX,
+    tr7dP100k = XXX,
+    tr7dP100kCh1 = XXX,
+    tr7dP100kCh3 = XXX,
+    tr7dP100kCh7 = XXX
+  )
 dt
 ```
 
@@ -126,17 +128,16 @@ dt
 df <- as_tibble(merge(dc, dt))
 df
 
-#create test positive variables 
-df %<>% 
+# create test positive variables
+df %<>%
   mutate(
     PosTestRateOnDay = dcr100k / tr100k,
-    PosTestRate7d = dcr7dPer100k / tr7dP100k, 
+    PosTestRate7d = dcr7dPer100k / tr7dP100k,
   )
-    
+
 
 # check there were no diagnosis without tests
 sum(df$casesDiagnosed > df$testsConducted)
 ```
 
 ## Covid data analysis DK overview - 
-
