@@ -12,7 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 library(roll)
-library(magrittr)
 
 # import data frames COVID: cases, tests and population size of municipalities
 dc <- read_delim(here("data", "Municipality_cases_time_series.csv"), ";", escape_double = FALSE, trim_ws = TRUE)
@@ -28,7 +27,7 @@ dsize
 
 ```{r dc-diagnosedCases, include=TRUE}
 # make data tidy
-dc %<>%
+dc <- dc %>%
   # use pivot_longer to transpose all columns (apart from date_sample) to two columns ('kommune',
   #  'testsConducted' 
   #'casesDiagnosed') 
@@ -39,7 +38,7 @@ dc
 ```
 
 ```{r testedPeople, include=TRUE}
-dt %<>%
+dc <- dc %>%
   # use pivot_longer to transpose all columns (apart from PrDate_adjusted) to two columns ('kommune','testsConducted') that hold the name of the kommune and the values of the number of conducted tests
   pivot_longer(XXXXX) %>%
   arrange(kommune, PrDate_adjusted) %>%
@@ -94,7 +93,7 @@ dt <- merge(dt, dsize)
 # compute dcr7d per 100k inhabitants (dcr7dPer100k)
 # use the lag function to compute the differences between a days (7day sum) value and the one from 7 days ago (dcr7dPer100kCh7)
 #
-dc %<>%
+dc <- dc %>%
   group_by(kommune) %>%
   arrange(kommune, date_sample) %>%
   mutate(
@@ -113,7 +112,7 @@ dc
 # tested numbers per 1000 people (tr100k)
 # rolling aggregates with roll_sum - cases of the last seven days (tr7d) - and per 100k inhabitants (tr7dP100k)
 # use the lag function to compute the differences between a day's (7day sum) value and the one from 7 days ago (tr7dP100kCh7)
-dt %<>%
+dc <- dc %>%
   group_by(kommune) %>%
   arrange(kommune, date_sample) %>%
   mutate(
@@ -131,7 +130,7 @@ df <- as_tibble(merge(dc, dt))
 df
 
 # create test positive variables
-df %<>%
+dc <- dc %>%
   mutate(
     PosTestRateOnDay = dcr100k / tr100k,
     PosTestRate7d = dcr7dPer100k / tr7dP100k,
