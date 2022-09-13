@@ -3,4 +3,5 @@ This is an exercise for the data visualization course on data transformation on 
 
 For a newer version go to the link below and click the link (Hent fil med overvågningsdata) on the bottom of the page:
 https://www.ssi.dk/sygdomme-beredskab-og-forskning/sygdomsovervaagning/c/covid19-overvaagning 
+
 disclaimer: SSI might have changed the placement of those files
