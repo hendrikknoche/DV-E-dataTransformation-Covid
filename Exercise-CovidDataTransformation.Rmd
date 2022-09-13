@@ -112,7 +112,7 @@ dc
 # tested numbers per 1000 people (tr100k)
 # rolling aggregates with roll_sum - cases of the last seven days (tr7d) - and per 100k inhabitants (tr7dP100k)
 # use the lag function to compute the differences between a day's (7day sum) value and the one from 7 days ago (tr7dP100kCh7)
-dc <- dc %>%
+dt <- dt %>%
   group_by(kommune) %>%
   arrange(kommune, date_sample) %>%
   mutate(
