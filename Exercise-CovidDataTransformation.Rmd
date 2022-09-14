@@ -38,7 +38,7 @@ dc
 ```
 
 ```{r testedPeople, include=TRUE}
-dc <- dc %>%
+dt <- dt %>%
   # use pivot_longer to transpose all columns (apart from PrDate_adjusted) to two columns ('kommune','testsConducted') that hold the name of the kommune and the values of the number of conducted tests
   pivot_longer(XXXXX) %>%
   arrange(kommune, PrDate_adjusted) %>%
